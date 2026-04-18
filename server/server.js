@@ -1,0 +1,42 @@
+import express from "express";
+import dotenv from "dotenv";
+
+import { errorMiddleware } from "./middlewares/error.middleware.js";
+import userRouter from "./routes/user.route.js";
+import cookieParser from "cookie-parser";
+import productRouter from "./routes/products.route.js";
+import orderRouter from "./routes/order.route.js";
+import cors from "cors";
+import { connectDB } from "./connection/mongo.connection.js";
+
+//configs
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+connectDB();
+
+//middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
+
+//Middlewares
+app.use(errorMiddleware);
+
+app.use("/products/", productRouter);
+app.use("/users", userRouter);
+app.use("/orders", orderRouter);
+
+export default app;
+
+app.listen(port, () => {
+  console.log(`listening on http://localhost:${port}`);
+});
