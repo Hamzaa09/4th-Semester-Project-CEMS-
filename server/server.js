@@ -21,10 +21,7 @@ connectDB();
 //middlewares
 app.use(
   cors({
-    origin: [
-      process.env.FRONTEND_URL,
-      "https://cems-backend-snowy.vercel.app/stripe/payment",
-    ],
+    origin: [process.env.FRONTEND_URL, "http://localhost:5174"],
     credentials: true,
   }),
 );
@@ -35,10 +32,10 @@ app.use(express.urlencoded({ extended: true }));
 //Middlewares
 app.use(errorMiddleware);
 
+app.use("/stripe", paymentRouter);
 app.use("/products/", productRouter);
 app.use("/users", userRouter);
 app.use("/orders", orderRouter);
-app.use("/stripe", paymentRouter);
 
 export default app;
 
