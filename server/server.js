@@ -21,12 +21,9 @@ connectDB();
 //middlewares
 app.use(
   cors({
-    origin: [
-      "https://cems-rose.vercel.app",
-      "http://localhost:5174",
-    ],
+    origin: process.env.FRONTEND_URL,
     credentials: true,
-  }),
+  })
 );
 app.use(cookieParser());
 app.use(express.json());
