@@ -21,7 +21,7 @@ userRouter.post(
   addUser,
 );
 userRouter.post("/login-user", loginUser);
-userRouter.get("/log-out-user", isAuthenticated, logoutUser);
+userRouter.post("/logout-user", logoutUser);
 userRouter.get("/role/:role", getUsersByRole);
 userRouter.get("/get-profile", isAuthenticated, getProfile);
 userRouter.get("/user/:id", isAuthenticated, isAdmin, getSingleUser);

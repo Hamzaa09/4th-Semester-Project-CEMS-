@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUserThunk } from "../../../../store/user/user.thunk";
+import toast from "react-hot-toast";
 
 const Navbar = ({ onMenuClick }) => {
   const { user } = useSelector((state) => state.userSlice);
@@ -24,6 +25,7 @@ const Navbar = ({ onMenuClick }) => {
   const handleLogout = async () => {
     await dispatch(logoutUserThunk());
     navigate("/");
+    toast.success("Logout Successfull!")
   };
 
   return (

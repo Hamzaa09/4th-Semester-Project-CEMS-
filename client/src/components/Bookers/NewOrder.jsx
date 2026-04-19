@@ -32,7 +32,7 @@ const NewOrder = () => {
       // phone: "123456789000",
       // address: "XYZ Road, ABC Town, Karachi",
       // products: [],
-      // payment_type: "",
+      payment_type: "",
       shop_name: "",
       customer_name: "",
       email: "",
@@ -104,7 +104,6 @@ const NewOrder = () => {
         }));
 
         const response = await axiosInstance.post("/stripe/payment", data);
-        // console.log(data)
         window.location.href = response.data.url;
       } catch (err) {
         toast.error("Payment failed. Please try again.");
