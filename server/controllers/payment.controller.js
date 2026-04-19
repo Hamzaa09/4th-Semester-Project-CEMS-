@@ -2,8 +2,11 @@ import Stripe from "stripe";
 import { asyncHandler } from "../utilities/asyncHandler.utility.js";
 import { ProductModel } from "../model/product.model.js";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
+dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+console.log(process.env.STRIPE_SECRET_KEY);
 
 export const getPayment = asyncHandler(async (req, res) => {
   const { products: orderedProducts } = req.body;
