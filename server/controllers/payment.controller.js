@@ -1,3 +1,10 @@
+import Stripe from "stripe";
+import { asyncHandler } from "../utilities/asyncHandler.utility.js";
+import { ProductModel } from "../model/product.model.js";
+import mongoose from "mongoose";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 export const getPayment = asyncHandler(async (req, res) => {
   const { products: orderedProducts } = req.body;
 
@@ -34,4 +41,12 @@ export const getPayment = asyncHandler(async (req, res) => {
   });
 
   res.status(200).json({ url: session.url });
+});
+
+export const getSession = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const session = await stripe.checkout.sessions.retrieve(id);
+
+  res.json({ session });
 });
