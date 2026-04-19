@@ -1,11 +1,27 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../utilities/axiosInstance.utility";
 
+// export const loginUserThunk = createAsyncThunk(
+//   "/users/login-user",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       const res = await axiosInstance.post("/users/login-user", data);
+//       return res.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response.message);
+//     }
+//   },
+// );
 export const loginUserThunk = createAsyncThunk(
   "/users/login-user",
   async (data, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post("/users/login-user", data);
+
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token); // ✅ save token
+      }
+
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.message);
@@ -13,13 +29,27 @@ export const loginUserThunk = createAsyncThunk(
   },
 );
 
+// export const logoutUserThunk = createAsyncThunk(
+//   "/users/log-out-user",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await axiosInstance.get("/users/log-out-user");
+//       return res.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response.message);
+//     }
+//   },
+// );
+
 export const logoutUserThunk = createAsyncThunk(
-  "/users/log-out-user",
+  "/users/logout-user",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get("/users/log-out-user");
+      const res = await axiosInstance.post("/users/logout-user");
+      localStorage.removeItem("token"); // ✅ remove token on logout
       return res.data;
     } catch (err) {
+      localStorage.removeItem("token"); // ✅ remove even if request fails
       return rejectWithValue(err.response.message);
     }
   },
