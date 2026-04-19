@@ -8,6 +8,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const getPayment = asyncHandler(async (req, res) => {
   const { products: orderedProducts } = req.body;
 
+  console.log(products);
+  console.log("🔥 body:", JSON.stringify(req.body));
+  console.log("🔥 headers:", JSON.stringify(req.headers));
+
   const product_ids = orderedProducts.map(
     (prod) => new mongoose.Types.ObjectId(prod.productId),
   );
