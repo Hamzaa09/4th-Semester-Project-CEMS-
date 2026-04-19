@@ -15,7 +15,7 @@ const SupplierDeliveredProductsPage = () => {
 
   useEffect(() => {
     dispatch(getOrderThunk({ booker: false, id: user._id }));
-  }, [dispatch]);
+  }, [dispatch, user]);
 
 
   return (

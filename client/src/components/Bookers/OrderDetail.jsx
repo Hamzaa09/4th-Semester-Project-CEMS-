@@ -185,7 +185,7 @@ const OrderDetail = () => {
             </div>
             <div className="flex justify-between">
               <span className="font-medium text-gray-600">Payment Method:</span>
-              <span className="text-gray-800">Cash</span>
+              <span className="text-gray-800">{order?.payment_type == "online" ? "Online" : "Cash On Dilevery"}</span>
             </div>
           </div>
         </div>

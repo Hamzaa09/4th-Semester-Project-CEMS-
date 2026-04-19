@@ -2,7 +2,9 @@ import { useEffect, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { getProfileThunk } from "../store/user/user.thunk";
+import { getProfileThunk } from "../store/user/user.thunk.js";
+import Success from "../src/components/Success"
+import Cancel from "../src/components/Cancel"
 
 const LoginForm = lazy(() => import("./components/Auth/LoginForm"));
 const MainPage = lazy(() => import("./components/Admin/MainPage"));
@@ -76,7 +78,9 @@ function App() {
               <Route path="/supplier/delivered-products" element={<SupplierDeliveredProductsPage />} />
             </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/success" element={<Success />}></Route>
+            <Route path="/cancel" element={<Cancel />}></Route>
+            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
           </Routes>
         </Suspense>
       </BrowserRouter>

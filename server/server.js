@@ -8,25 +8,26 @@ import productRouter from "./routes/products.route.js";
 import orderRouter from "./routes/order.route.js";
 import cors from "cors";
 import { connectDB } from "./connection/mongo.connection.js";
+import paymentRouter from "./routes/payment.route.js";
 
 //configs
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 connectDB();
 
 //middlewares
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
   }),
 );
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 //Middlewares
 app.use(errorMiddleware);
@@ -34,6 +35,7 @@ app.use(errorMiddleware);
 app.use("/products/", productRouter);
 app.use("/users", userRouter);
 app.use("/orders", orderRouter);
+app.use("/stripe", paymentRouter);
 
 export default app;
 

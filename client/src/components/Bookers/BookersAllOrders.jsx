@@ -16,7 +16,7 @@ const BookersAllOrders = () => {
 
   useEffect(() => {
     dispatch(getOrderThunk({ booker: true, id: user._id }));
-  }, []);
+  }, [user]);
 
   return (
     <div className="h-full">

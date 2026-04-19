@@ -4,7 +4,7 @@ import { UserModel } from "../model/user.model.js";
 
 export const placeOrder = async (req, res, next) => {
   try {
-    const { shop_name, products, address, booker_id } = req.body;
+    const { shop_name, products, address, booker_id, payment_type } = req.body;
 
     if (!shop_name || !products || !address || !booker_id) {
       return res.status(400).json({
@@ -28,6 +28,7 @@ export const placeOrder = async (req, res, next) => {
       product_items: products,
       supplier_id,
       total_price,
+      payment_type,
     };
 
     const order = await OrderModel.create(data);

@@ -6,6 +6,9 @@ import { getAllProductsThunk } from "../../../store/product/product.thunk";
 import { placeOrderThunk } from "../../../store/order/order.thunk";
 import { toast } from "react-hot-toast";
 import { Navigate, useNavigate } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js"
+import { axiosInstance } from "../../../utilities/axiosInstance.utility";
+import axios from "axios";
 
 const NewOrder = () => {
   const navigate = useNavigate();
@@ -23,18 +26,20 @@ const NewOrder = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      // shop_name: "ABC shop",
-      // customer_name: "XYZ Customer",
-      // email: "booker1@gmail.com",
-      // phone: "123456789000",
-      // address: "XYZ Road, ABC Town, Karachi",
-      // products: [],
-      shop_name: "",
-      customer_name: "",
-      email: "",
-      phone: "",
-      address: "",
+      shop_name: "ABC shop",
+      customer_name: "XYZ Customer",
+      email: "booker1@gmail.com",
+      phone: "123456789000",
+      address: "XYZ Road, ABC Town, Karachi",
       products: [],
+      payment_type: "",
+      // shop_name: "",
+      // customer_name: "",
+      // email: "",
+      // phone: "",
+      // address: "",
+      // payment_type: "",
+      // products: [],
     },
   });
 
@@ -47,36 +52,64 @@ const NewOrder = () => {
     dispatch(getAllProductsThunk());
   }, [dispatch]);
 
+
   const onSubmit = async (data) => {
-    if (data.products.length === 0) {
-      toast.error("Please add at least one product.");
-      return;
-    }
+    // cod payment flow
+    if (data.payment_type === "cod") {
+      if (data.products.length === 0) {
+        toast.error("Please add at least one product.");
+        return;
+      }
 
-    const productsWithPrice = data.products.map((item) => {
-      const product = allProducts.find(
-        (p) => p._id === item.productId
+      const productsWithPrice = data.products.map((item) => {
+        const product = allProducts.find((p) => p._id === item.productId);
+        return {
+          ...item,
+          price: product ? product.product_price : 0,
+        };
+      });
+
+      const res = await dispatch(
+        placeOrderThunk({
+          ...data,
+          products: productsWithPrice,
+          booker_id: user._id,
+        })
       );
-      return {
-        ...item,
-        price: product ? product.product_price : 0,
-      };
-    });
 
-    const res = await dispatch(
-      placeOrderThunk({
-        ...data,
-        products: productsWithPrice,
-        booker_id: user._id,
-      })
-    );
+      if (res.payload.success) {
+        toast.success("Order placed successfully!");
+        reset();
+        navigate("/booker/get-my-orders"); // ✅ lowercase navigate
+      } else {
+        toast.error("Failed to place order!");
+      }
 
-    if (res.payload.success) {
-      toast.success("Order placed successfully!");
-      reset();
-      Navigate("/booker/get-my-orders")
     } else {
-      toast.error("Failed to place order!");
+      // online payment flow
+      try {
+        const productsWithPrice = data.products.map((item) => {
+          const product = allProducts.find((p) => p._id === item.productId);
+          return {
+            ...item,
+            price: product ? product.product_price : 0,
+          };
+        });
+
+        // save order data to localStorage before leaving the page
+        localStorage.setItem("pendingOrder", JSON.stringify({
+          ...data,
+          products: productsWithPrice,
+          booker_id: user._id,
+        }));
+
+        const response = await axiosInstance.post("/stripe/payment", data);
+        // console.log(data)
+        window.location.href = response.data.url;
+      } catch (err) {
+        toast.error("Payment failed. Please try again.");
+        console.error(err);
+      }
     }
   };
 
@@ -118,6 +151,28 @@ const NewOrder = () => {
             )}
           </div>
         ))}
+
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-1">
+            Payment Method
+          </label>
+          <select
+            {...register("payment_type", {
+              required: "Payment method is required",
+            })}
+            className={`w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400 bg-white text-gray-700 ${errors.paymentMethod ? "border-red-500" : "border-gray-300"
+              }`}
+          >
+            <option value="">Select Payment Method</option>
+            <option value="cod">Cash on Delivery</option>
+            <option value="online">Online Payment</option>
+          </select>
+          {errors.payment_type && (
+            <p className="text-red-500 text-sm">
+              {errors.payment_type.message}
+            </p>
+          )}
+        </div>
 
         {/* Products */}
         <div>
