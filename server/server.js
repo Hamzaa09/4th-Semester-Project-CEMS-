@@ -29,7 +29,7 @@ app.use("/products", productRouter);
 app.use("/users", userRouter);
 app.use("/orders", orderRouter);
 
-app.use(errorMiddleware); // ✅ always last
+app.use(errorMiddleware);
 
 // app.listen(port, () => {
 //     console.log(`listening on http://localhost:${port}`);

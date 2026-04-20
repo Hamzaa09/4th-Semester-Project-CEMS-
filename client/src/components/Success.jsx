@@ -21,7 +21,6 @@ const Success = () => {
         const pendingOrder = localStorage.getItem("pendingOrder");
 
         if (!pendingOrder) {
-          toast.error("No order found.");
           setLoading(false);
           return;
         }
@@ -34,10 +33,7 @@ const Success = () => {
 
         if (res.payload.success) {
           toast.success("Order placed successfully!");
-        } else {
-          toast.error("Order placement failed!");
         }
-
       } catch (err) {
         toast.error("Something went wrong.");
         console.error(err);

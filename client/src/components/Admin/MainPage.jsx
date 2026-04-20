@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import SideBar from "./components/SideBar";
-import ChartsPage from "./components/ChartsPage";
-import StatsCards from "./components/StatsCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderAdminThunk } from "../../../store/order/order.thunk";
 import { getUserByRoleThunk } from "../../../store/user/user.thunk";
-import SingleOrder from "../Bookers/SingleOrder";
 import { useNavigate } from "react-router-dom";
+import { Package, ArrowRight } from "lucide-react";
+import SideBar from "./components/SideBar";
+import Navbar from "./components/Navbar";
+import SingleOrder from "../Bookers/SingleOrder";
+import StatsCards from "../Admin/components/StatsCard"
+import ChartsPage from "../Admin/components/ChartsPage"
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -15,8 +16,7 @@ const MainPage = () => {
   const { bookers, suppliers } = useSelector((state) => state.userSlice);
   const { orders } = useSelector((state) => state.orderSlice);
   const [bookerState, setbookerState] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // 👈
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,44 +36,86 @@ const MainPage = () => {
   useEffect(() => { }, [bookers, suppliers]);
 
   return (
-    <div>
-      <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} /> {/* 👈 */}
+    <div className="min-h-screen bg-gray-50">
+      <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-      <div className="relative flex bg-gray-100">
-        <SideBar name={"home"} isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)} />
+      <div className="relative flex">
+        <SideBar
+          name={"home"}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
-        <div className="w-full flex flex-col px-10">
-          <StatsCards
-            bookers={bookerState}
-            suppliers={suppliers}
-            orders={orders}
-          />
-          <ChartsPage orders={orders} />
+        <main className="flex-1 w-full">
+          <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            {/* Stats Section */}
+            <StatsCards
+              bookers={bookerState}
+              suppliers={suppliers}
+              orders={orders}
+            />
 
-          <div className="flex justify-between w-full items-center bg-white px-4 py-4 rounded-xl">
-            <h2 className="text-3xl font-bold text-gray-800">Recent Orders</h2>
-          </div>
+            {/* Charts Section */}
+            <ChartsPage orders={orders} />
 
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 bg-gray-200 rounded-2xl my-6 p-6">
-            {orders && orders.length > 0 ? (
-              orders.map((order) => (
-                <div
-                  key={order._id}
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/booker/single-product/${order._id}`);
-                  }}
-                >
-                  <SingleOrder order={order} />
+            {/* Recent Orders Section */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between bg-white border border-gray-200 px-6 py-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 text-emerald-600">
+                    <Package className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Recent Orders
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                      {orders?.length || 0} orders in total
+                    </p>
+                  </div>
                 </div>
-              ))
-            ) : (
-              <div className="px-3 text-gray-700 text-xl col-span-full">No Orders Yet!</div>
-            )}
+                <button
+                  onClick={() => navigate("/orders")}
+                  className="flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+                >
+                  View All
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="bg-white border border-gray-200 p-6 shadow-sm">
+                {orders && orders.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {orders.slice(0, 10).map((order) => (
+                      <div
+                        key={order._id}
+                        className="cursor-pointer transition-transform hover:-translate-y-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/booker/single-product/${order._id}`);
+                        }}
+                      >
+                        <SingleOrder order={order} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="w-16 h-16 bg-gray-100 flex items-center justify-center mb-4">
+                      <Package className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">
+                      No Orders Yet
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Orders will appear here once they are placed
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

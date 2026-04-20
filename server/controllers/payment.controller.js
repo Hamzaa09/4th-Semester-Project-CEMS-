@@ -6,13 +6,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-console.log(process.env.STRIPE_SECRET_KEY);
 
 export const getPayment = asyncHandler(async (req, res) => {
   const { products: orderedProducts } = req.body;
-
-  // ✅ log orderedProducts not products
-  console.log("🔥 orderedProducts:", JSON.stringify(orderedProducts));
 
   const product_ids = orderedProducts.map(
     (prod) => new mongoose.Types.ObjectId(prod.productId),
@@ -27,7 +23,7 @@ export const getPayment = asyncHandler(async (req, res) => {
 
     return {
       price_data: {
-        currency: "usd",
+        currency: "pkr",
         product_data: { name: dbProduct.product_title },
         unit_amount: dbProduct.product_price * 100,
       },

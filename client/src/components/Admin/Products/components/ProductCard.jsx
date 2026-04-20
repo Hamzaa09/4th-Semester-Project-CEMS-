@@ -1,34 +1,62 @@
 import React from "react";
+import { Package, ShoppingCart, Star } from "lucide-react";
 
 export default function ProductCard({ product }) {
+  const formatPrice = (price) => {
+    return Number(price).toLocaleString();
+  };
+
   return (
-    <div className="w-full md:w-[calc((1/2*100%)-1.25rem)] lg:w-[calc((1/3*100%)-1.25rem)] xl:w-[calc((1/4*100%)-1.25rem)] h-fit bg-white shadow-md rounded-xl overflow-hidden transition duration-200 hover:cursor-pointer p-5 ">
-      <div className="w-full h-fit">
+    <div className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-0.75rem)] xl:w-[calc(25%-0.75rem)] bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+      {/* Image Container */}
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
         <img
           src={product.product_img}
           alt={product.product_title}
-          className="w-full h-75 object-top object-cover rounded-xl border border-gray-300"
+          className="w-full h-full object-cover object-top transition-transform duration-300 hover:scale-105"
         />
+        {/* Quality Badge */}
+        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 shadow-sm flex items-center gap-1">
+          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+          <span className="text-xs font-semibold text-gray-700">{product.product_quality}</span>
+        </div>
       </div>
 
-      <div className="py-4 text-center">
-        <div className="w-full flex justify-between items-center gap-3">
-          <h3 className="text-md font-bold text-left">{product.product_title}</h3>
-          <p className="text-md font-bold">{product.product_price} PKR</p>
+      {/* Content */}
+      <div className="p-4">
+        {/* Title & Price */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
+            {product.product_title}
+          </h3>
+          <p className="text-sm font-bold text-emerald-600 whitespace-nowrap">
+            {formatPrice(product.product_price)} PKR
+          </p>
         </div>
 
-        <div className="mt-4 w-full flex justify-around items-center">
-          <p className="px-4">
-            {" "}
-            <b>Stock</b> <br /> {product.product_stock}
-          </p>
-          <p className="px-4 border border-transparent border-l-gray-300 border-r-gray-300">
-            {" "}
-            <b>Orders</b> <br /> {product.product_stock}
-          </p>
-          <p className="px-4">
-            <b>Quality</b> <br /> {product.product_quality}
-          </p>
+        {/* Stats */}
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5">
+            <div className="w-7 h-7 bg-emerald-50 flex items-center justify-center">
+              <Package className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">Stock</p>
+              <p className="text-sm font-semibold text-gray-900">{product.product_stock}</p>
+            </div>
+          </div>
+
+          <div className="w-px h-8 bg-gray-200" />
+
+          <div className="flex items-center gap-1.5">
+            <div className="w-7 h-7 bg-blue-50 flex items-center justify-center">
+              <ShoppingCart className="w-3.5 h-3.5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">Orders</p>
+              <p className="text-sm font-semibold text-gray-900">{product.product_stock}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
