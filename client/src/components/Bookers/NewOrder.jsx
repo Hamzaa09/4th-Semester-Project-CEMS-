@@ -1,6 +1,17 @@
 import React, { useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { X, Plus, ShoppingBag, Store, User, Mail, Phone, MapPin, CreditCard, Package } from "lucide-react";
+import {
+  X,
+  Plus,
+  ShoppingBag,
+  Store,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  CreditCard,
+  Package,
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsThunk } from "../../../store/product/product.thunk";
 import { placeOrderThunk } from "../../../store/order/order.thunk";
@@ -12,7 +23,7 @@ const NewOrder = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { allProducts, loading: productsLoading } = useSelector(
-    (state) => state.productSlice
+    (state) => state.productSlice,
   );
   const { user } = useSelector((state) => state.userSlice);
 
@@ -63,7 +74,7 @@ const NewOrder = () => {
           ...data,
           products: productsWithPrice,
           booker_id: user._id,
-        })
+        }),
       );
 
       if (res.payload.success) {
@@ -83,11 +94,14 @@ const NewOrder = () => {
           };
         });
 
-        localStorage.setItem("pendingOrder", JSON.stringify({
-          ...data,
-          products: productsWithPrice,
-          booker_id: user._id,
-        }));
+        localStorage.setItem(
+          "pendingOrder",
+          JSON.stringify({
+            ...data,
+            products: productsWithPrice,
+            booker_id: user._id,
+          }),
+        );
 
         const response = await axiosInstance.post("/stripe/payment", data);
         window.location.href = response.data.url;
@@ -119,7 +133,9 @@ const NewOrder = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-gray-900">New Order</h2>
-            <p className="text-sm text-gray-500">Fill in the details to create an order</p>
+            <p className="text-sm text-gray-500">
+              Fill in the details to create an order
+            </p>
           </div>
         </div>
 
@@ -129,7 +145,10 @@ const NewOrder = () => {
             {formFields.map((field) => {
               const Icon = field.icon;
               return (
-                <div key={field.name} className={field.name === "address" ? "md:col-span-2" : ""}>
+                <div
+                  key={field.name}
+                  className={field.name === "address" ? "md:col-span-2" : ""}
+                >
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
                     <Icon className="w-4 h-4 text-gray-400" />
                     {field.label}
@@ -141,11 +160,15 @@ const NewOrder = () => {
                       required: `${field.label} is required`,
                     })}
                     className={`w-full border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${
-                      errors[field.name] ? "border-red-400 bg-red-50" : "border-gray-300"
+                      errors[field.name]
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-300"
                     }`}
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-xs mt-1">{errors[field.name].message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors[field.name].message}
+                    </p>
                   )}
                 </div>
               );
@@ -163,7 +186,9 @@ const NewOrder = () => {
                 required: "Payment method is required",
               })}
               className={`w-full border px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${
-                errors.payment_type ? "border-red-400 bg-red-50" : "border-gray-300"
+                errors.payment_type
+                  ? "border-red-400 bg-red-50"
+                  : "border-gray-300"
               }`}
             >
               <option value="">Select Payment Method</option>
@@ -171,7 +196,9 @@ const NewOrder = () => {
               <option value="online">Online Payment</option>
             </select>
             {errors.payment_type && (
-              <p className="text-red-500 text-xs mt-1">{errors.payment_type.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.payment_type.message}
+              </p>
             )}
           </div>
 
@@ -197,7 +224,9 @@ const NewOrder = () => {
               <div className="text-center py-8 bg-gray-50 border border-dashed border-gray-300">
                 <Package className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                 <p className="text-sm text-gray-500">No products added yet</p>
-                <p className="text-xs text-gray-400">Click "Add Product" to get started</p>
+                <p className="text-xs text-gray-400">
+                  Click "Add Product" to get started
+                </p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -206,8 +235,10 @@ const NewOrder = () => {
                     key={field.id}
                     className="flex items-center gap-3 bg-gray-50 border border-gray-200 p-3"
                   >
-                    <span className="text-xs font-medium text-gray-400 w-6">{index + 1}.</span>
-                    
+                    <span className="text-xs font-medium text-gray-400 w-6">
+                      {index + 1}.
+                    </span>
+
                     <Controller
                       name={`products[${index}].productId`}
                       control={control}

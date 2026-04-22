@@ -94,13 +94,16 @@ export const getProfileThunk = createAsyncThunk(
 );
 
 export const getSingleUserThunk = createAsyncThunk(
-  "/users/user/:id",
+  "users/getSingleUser",
   async ({ id }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get(`/users/user/${id}`);
       return res.data;
+
     } catch (err) {
-      return rejectWithValue(err.response.message);
+      return rejectWithValue(
+        err.response?.data?.message || err.message
+      );
     }
   },
 );

@@ -36,7 +36,7 @@ const SupplierPage = () => {
 
       <div className="flex">
         <SideBar
-          name={"get-my-orders"}
+          name={"queue-products"}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />

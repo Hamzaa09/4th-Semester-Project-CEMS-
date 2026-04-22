@@ -18,7 +18,9 @@ export default function ProductCard({ product }) {
         {/* Quality Badge */}
         <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 shadow-sm flex items-center gap-1">
           <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-          <span className="text-xs font-semibold text-gray-700">{product.product_quality}</span>
+          <span className="text-xs font-semibold text-gray-700">
+            {product.product_quality}
+          </span>
         </div>
       </div>
 
@@ -38,11 +40,21 @@ export default function ProductCard({ product }) {
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5">
             <div className="w-7 h-7 bg-emerald-50 flex items-center justify-center">
-              <Package className="w-3.5 h-3.5 text-emerald-600" />
+              <Package
+                className={
+                  product.product_stock > 0
+                    ? "w-3.5 h-3.5 text-emerald-600"
+                    : "w-3.5 h-3.5 text-red-600"
+                }
+              />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">Stock</p>
-              <p className="text-sm font-semibold text-gray-900">{product.product_stock}</p>
+              <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">
+                Stock
+              </p>
+              <p className="text-sm font-semibold text-gray-900">
+                {product.product_stock ?? 0}
+              </p>
             </div>
           </div>
 
@@ -53,8 +65,12 @@ export default function ProductCard({ product }) {
               <ShoppingCart className="w-3.5 h-3.5 text-blue-600" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">Orders</p>
-              <p className="text-sm font-semibold text-gray-900">{product.product_stock}</p>
+              <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">
+                Orders
+              </p>
+              <p className="text-sm font-semibold text-gray-900">
+                {product.product_stock}
+              </p>
             </div>
           </div>
         </div>

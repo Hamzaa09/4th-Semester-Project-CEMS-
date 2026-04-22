@@ -15,8 +15,10 @@ const OrderDetail = () => {
   const [booker, setBooker] = useState({});
 
   useEffect(() => {
-    dispatch(getSingleOrderThunk({ id }));
-  }, [dispatch]);
+    if (id) {
+      dispatch(getSingleOrderThunk({ id }));
+    }
+  }, [id, dispatch]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -26,16 +28,14 @@ const OrderDetail = () => {
 
       const results = await Promise.all(
         parsed.map(async (p, index) => {
-          const res = await dispatch(
-            getSingleProductThunk({ id: p })
-          );
+          const res = await dispatch(getSingleProductThunk({ id: p }));
 
           return {
             quantity: order.product_items[index].quantity,
             booker_id: order.booker_id,
             productInfo: res.payload.product,
           };
-        })
+        }),
       );
 
       setProductsData(results);
@@ -46,14 +46,16 @@ const OrderDetail = () => {
 
   useEffect(() => {
     const bookerCall = async () => {
-      const result = await dispatch(getSingleUserThunk({ id: order?.booker_id }))
+      if (order?.booker_id) {
+        const result = await dispatch(
+          getSingleUserThunk({ id: order?.booker_id }),
+        );
+        if (result.payload) setBooker(result.payload.user);
+      }
+    };
 
-      if (result.payload)
-        setBooker(result.payload.user)
-    }
-
-    bookerCall()
-  }, [order])
+    bookerCall();
+  }, [order?.booker_id]);
 
   return (
     <>
@@ -78,7 +80,9 @@ const OrderDetail = () => {
           <div className="grid grid-cols-2 gap-4 text-sm mb-4">
             <div>
               <span className="font-medium text-gray-600">Order ID:</span>{" "}
-              <span className="text-gray-800">{order?._id ? `#${order._id.slice(-5)}` : "N/A"}</span>
+              <span className="text-gray-800">
+                {order?._id ? `#${order._id.slice(-5)}` : "N/A"}
+              </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Created At:</span>{" "}
@@ -105,15 +109,23 @@ const OrderDetail = () => {
           <div className="grid grid-cols-2 gap-4 text-sm mb-4">
             <div>
               <span className="font-medium text-gray-600">Booker Name:</span>{" "}
-              <span className="text-gray-800">{booker?.fullName}</span>
+              <span className="text-gray-800">
+                {user.role === "booker" ? user?.fullName : booker?.fullName}
+              </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Phone:</span>{" "}
-              <span className="text-gray-800">{booker?.phoneNumber}</span>
+              <span className="text-gray-800">
+                {user.role === "booker"
+                  ? user?.phoneNumber
+                  : booker?.phoneNumber}
+              </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Email:</span>{" "}
-              <span className="text-gray-800">{booker?.email}</span>
+              <span className="text-gray-800">
+                {user.role === "booker" ? user?.email : booker?.email}
+              </span>
             </div>
           </div>
 
@@ -138,10 +150,14 @@ const OrderDetail = () => {
                   </td>
                   <td className="border p-2 text-center">{item.quantity}</td>
 
-                  <td className="border p-2 text-center">{item.productInfo?.product_price} PKR</td>
+                  <td className="border p-2 text-center">
+                    {item.productInfo?.product_price} PKR
+                  </td>
 
                   <td className="border p-2 text-right">
-                    {Number(item.productInfo?.product_price) * Number(item.quantity)} PKR
+                    {Number(item.productInfo?.product_price) *
+                      Number(item.quantity)}{" "}
+                    PKR
                   </td>
                 </tr>
               ))}
@@ -155,20 +171,18 @@ const OrderDetail = () => {
           <div className="text-sm space-y-1">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal:</span>
-              <span className="text-gray-800">
-                {order?.total_price} PKR
-              </span>
+              <span className="text-gray-800">{order?.total_price} PKR</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Discount (10%):</span>
               <span className="text-gray-800">
-                {(order?.total_price * 0.1)} PKR
+                {order?.total_price * 0.1} PKR
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Tax (5%):</span>
               <span className="text-gray-800">
-                {(order?.total_price * 0.05)} PKR
+                {order?.total_price * 0.05} PKR
               </span>
             </div>
             <div className="flex justify-between border-t pt-2 mt-2">
@@ -176,16 +190,19 @@ const OrderDetail = () => {
                 Total Payment:
               </span>
               <span className="font-semibold text-green-600">
-                {
-                  (Number(order?.total_price) - Number((order?.total_price * 0.1)) +
-                    Number(order?.total_price * 0.05))
-                }
+                {Number(order?.total_price) -
+                  Number(order?.total_price * 0.1) +
+                  Number(order?.total_price * 0.05)}
                 PKR
               </span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium text-gray-600">Payment Method:</span>
-              <span className="text-gray-800">{order?.payment_type == "online" ? "Online" : "Cash On Dilevery"}</span>
+              <span className="text-gray-800">
+                {order?.payment_type == "online"
+                  ? "Online"
+                  : "Cash On Dilevery"}
+              </span>
             </div>
           </div>
         </div>

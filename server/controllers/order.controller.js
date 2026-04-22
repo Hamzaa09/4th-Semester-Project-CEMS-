@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
 import { OrderModel } from "../model/order.model.js";
 import { UserModel } from "../model/user.model.js";
+import { ProductModel } from "../model/product.model.js";
 
 export const placeOrder = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { shop_name, products, address, booker_id, payment_type } = req.body;
 
@@ -13,13 +17,28 @@ export const placeOrder = async (req, res, next) => {
       });
     }
 
-    let suppliers = await UserModel.find({ role: "supplier" }).select("_id");
+    let suppliers = await UserModel.find({ role: "supplier" })
+      .select("_id")
+      .session(session);
     const randomIndex = Math.floor(Math.random() * suppliers.length);
     const supplier_id = suppliers[randomIndex]._id;
     const total_price = products.reduce(
       (sum, product) => sum + Number(product.price) * Number(product.quantity),
       0,
     );
+    const bulkOps = products.map((item) => ({
+      updateOne: {
+        filter: {
+          _id: item.productId,
+          stock: { $gte: item.quantity },
+        },
+        update: {
+          $inc: { stock: -item.quantity },
+        },
+      },
+    }));
+
+    await ProductModel.bulkWrite(bulkOps, { session });
 
     const data = {
       shop_name,
@@ -31,7 +50,10 @@ export const placeOrder = async (req, res, next) => {
       payment_type,
     };
 
-    const order = await OrderModel.create(data);
+    const order = await OrderModel.create([data], { session });
+
+    await session.commitTransaction();
+    await session.endSession();
 
     return res.status(200).json({
       success: true,
@@ -40,6 +62,8 @@ export const placeOrder = async (req, res, next) => {
       order,
     });
   } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
     console.log(error);
     return res.status(500).json({
       success: false,

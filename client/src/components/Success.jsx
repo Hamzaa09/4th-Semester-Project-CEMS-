@@ -10,12 +10,12 @@ const Success = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const hasPlacedOrder = useRef(false); // ✅ prevents duplicate execution
+  const hasPlacedOrder = useRef(false);
 
   useEffect(() => {
     const placeOrder = async () => {
-      if (hasPlacedOrder.current) return; // ✅ stop if already ran
-      hasPlacedOrder.current = true;      // ✅ mark immediately before async work
+      if (hasPlacedOrder.current) return;
+      hasPlacedOrder.current = true;     
 
       try {
         const pendingOrder = localStorage.getItem("pendingOrder");
@@ -26,8 +26,7 @@ const Success = () => {
         }
 
         const orderData = JSON.parse(pendingOrder);
-
-        localStorage.removeItem("pendingOrder"); // ✅ remove BEFORE dispatch
+        localStorage.removeItem("pendingOrder");
 
         const res = await dispatch(placeOrderThunk(orderData));
 
